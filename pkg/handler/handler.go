@@ -6,11 +6,12 @@ import (
 )
 
 type Handler struct {
-	services *service.Service
+	authService    service.AuthorizationService
+	problemService service.ProblemService
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(authService service.AuthorizationService, problemService service.ProblemService) *Handler {
+	return &Handler{authService: authService, problemService: problemService}
 }
 
 func (h *Handler) InitRouters() *mux.Router {

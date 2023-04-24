@@ -25,7 +25,7 @@ func (h *Handler) RequireAuthentication(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, err := h.services.Authorization.ParseTokenService(header[0])
+		userID, err := h.authService.ParseToken(header[0])
 		if err != nil {
 			newErrorResponse(w, http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))
 			return
@@ -51,7 +51,7 @@ func (h *Handler) RequireAccess(next http.Handler) http.Handler {
 			return
 		}
 
-		err = h.services.AccessRightService(userid, postId)
+		err = h.problemService.AccessRight(userid, postId)
 		if err != nil {
 			newErrorResponse(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 			return

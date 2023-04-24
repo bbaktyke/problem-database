@@ -38,8 +38,9 @@ func main() {
 	}
 
 	repos := repository.NewRepository(db)
-	service := service.NewService(repos)
-	handlers := hadler.NewHandler(service)
+	authService := service.NewAuthService(repos.Authorization)
+	problemService := service.NewProblemService(repos.Problem)
+	handlers := hadler.NewHandler(authService, problemService)
 
 	srv := new(test.Server)
 	go func() {
