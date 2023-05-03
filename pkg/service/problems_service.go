@@ -7,17 +7,17 @@ import (
 	"git.01.alem.school/bbaktyke/test.project.git/pkg/repository"
 )
 
-type ProblemService struct {
+type ProblemServiceImpl struct {
 	repo repository.Problem
 }
 
-func NewProblemService(repo repository.Problem) *ProblemService {
-	return &ProblemService{
+func NewProblemService(repo repository.Problem) ProblemService {
+	return &ProblemServiceImpl{
 		repo: repo,
 	}
 }
 
-func (p *ProblemService) CreateService(userid int, merged models.ProblemWithTopics) (int, error) {
+func (p *ProblemServiceImpl) CreateProblem(userid int, merged models.ProblemWithTopics) (int, error) {
 	merged.Problem.UserID = userid
 	var err error
 	merged.Problem.CreatedAt = *GetTime()
@@ -29,7 +29,7 @@ func (p *ProblemService) CreateService(userid int, merged models.ProblemWithTopi
 	return id, nil
 }
 
-func (p *ProblemService) GetAllService(pageNum, pageSize int) ([]models.ProblemWithTopics, error) {
+func (p *ProblemServiceImpl) GetProblems(pageNum, pageSize int) ([]models.ProblemWithTopics, error) {
 	merged, err := p.repo.GetAllProblemsRepo(pageNum, pageSize)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (p *ProblemService) GetAllService(pageNum, pageSize int) ([]models.ProblemW
 	return merged, nil
 }
 
-func (p *ProblemService) GetByIDService(id int) (models.ProblemWithTopics, error) {
+func (p *ProblemServiceImpl) GetProblemByID(id int) (models.ProblemWithTopics, error) {
 	var merged models.ProblemWithTopics
 	merged, err := p.repo.GetByIDProblemsRepo(id)
 	if err != nil {
@@ -46,11 +46,11 @@ func (p *ProblemService) GetByIDService(id int) (models.ProblemWithTopics, error
 	return merged, nil
 }
 
-func (p *ProblemService) DeleteService(problemid int) error {
+func (p *ProblemServiceImpl) DeleteProblem(problemid int) error {
 	return p.repo.DeleteRepo(problemid)
 }
 
-func (p *ProblemService) UpdateService(problemid int, upd models.ProblemUpdate) error {
+func (p *ProblemServiceImpl) UpdateProblem(problemid int, upd models.ProblemUpdate) error {
 	if err := upd.Validate(); err != nil {
 		return err
 	}
@@ -58,15 +58,15 @@ func (p *ProblemService) UpdateService(problemid int, upd models.ProblemUpdate) 
 	return p.repo.UpdateRepo(problemid, upd)
 }
 
-func (p *ProblemService) AccessRightService(userId, problemId int) error {
+func (p *ProblemServiceImpl) AccessRight(userId, problemId int) error {
 	return p.repo.AccessRight(userId, problemId)
 }
 
-func (p *ProblemService) GetByParameter(topic, level string) ([]models.ProblemWithTopics, error) {
+func (p *ProblemServiceImpl) GetByParameter(topic, level string) ([]models.ProblemWithTopics, error) {
 	return p.repo.GetByParameter(topic, level)
 }
 
-func (p *ProblemService) SearchProblemService(title string) ([]models.ProblemWithTopics, error) {
+func (p *ProblemServiceImpl) SearchProblem(title string) ([]models.ProblemWithTopics, error) {
 	return p.repo.SearchProblemRepo(title)
 }
 

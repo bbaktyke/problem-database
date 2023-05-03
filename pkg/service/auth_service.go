@@ -26,18 +26,18 @@ type AuthService struct {
 	repo repository.Authorization
 }
 
-func NewAuthService(repo repository.Authorization) *AuthService {
+func NewAuthService(repo repository.Authorization) AuthorizationService {
 	return &AuthService{
 		repo: repo,
 	}
 }
 
-func (auth *AuthService) CreateUserService(user models.User) (int, error) {
+func (auth *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return auth.repo.CreateUserRepo(user)
 }
 
-func (auth *AuthService) GenerateTokenService(username, password string) (string, error) {
+func (auth *AuthService) GenerateToken(username, password string) (string, error) {
 	user, err := auth.repo.GetUserRepo(username, generatePasswordHash(password))
 	if err != nil {
 		return "", nil
@@ -54,7 +54,7 @@ func (auth *AuthService) GenerateTokenService(username, password string) (string
 	return token.SignedString([]byte(signingKey))
 }
 
-func (auth *AuthService) ParseTokenService(tokenString string) (int, error) {
+func (auth *AuthService) ParseToken(tokenString string) (int, error) {
 	parsedToken, err := jwt.ParseWithClaims(tokenString, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")

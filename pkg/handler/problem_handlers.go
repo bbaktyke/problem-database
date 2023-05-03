@@ -29,7 +29,7 @@ func (h *Handler) CreateProblem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.services.Problem.CreateService(userid, mergestruct)
+	id, err := h.problemService.CreateProblem(userid, mergestruct)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -50,7 +50,7 @@ func (h *Handler) DeleteProblem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.services.Problem.DeleteService(id)
+	err = h.problemService.DeleteProblem(id)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -78,7 +78,7 @@ func (h *Handler) UpdateProblem(w http.ResponseWriter, r *http.Request) {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	err = h.services.Problem.UpdateService(id, update)
+	err = h.problemService.UpdateProblem(id, update)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -107,7 +107,7 @@ func (h *Handler) ReadProblem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mergestruct, err := h.services.Problem.GetAllService(pageNum, pageSize)
+	mergestruct, err := h.problemService.GetProblems(pageNum, pageSize)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -124,7 +124,7 @@ func (h *Handler) ReadProblemByParameter(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	topic := vars["topic"]
 	level := vars["level"]
-	mergestruct, err := h.services.Problem.GetByParameter(topic, level)
+	mergestruct, err := h.problemService.GetByParameter(topic, level)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -145,7 +145,7 @@ func (h *Handler) ReadProblemByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mergestruct, err := h.services.Problem.GetByIDService(id)
+	mergestruct, err := h.problemService.GetProblemByID(id)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -160,7 +160,7 @@ func (h *Handler) ReadProblemByID(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SearchProblem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	title := vars["title"]
-	mergestruct, err := h.services.Problem.SearchProblemService(title)
+	mergestruct, err := h.problemService.SearchProblem(title)
 	if err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
