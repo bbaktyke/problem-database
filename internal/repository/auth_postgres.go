@@ -1,13 +1,18 @@
 package repository
 
 import (
-	"git.01.alem.school/bbaktyke/test.project.git/pkg/models"
+	"git.01.alem.school/bbaktyke/test.project.git/internal/models"
 	"github.com/jmoiron/sqlx"
 )
 
 type AuthPostgres struct {
 	db *sqlx.DB
 }
+
+const (
+	createUserQuery = "INSERT INTO " + usersTable + " (name, username, password) VALUES ($1, $2, $3) RETURNING id"
+	selectUserQuery = "SELECT id FROM " + usersTable + " WHERE username=$1 AND password=$2"
+)
 
 func NewAuthRepository(db *sqlx.DB) *AuthPostgres {
 	return &AuthPostgres{db: db}

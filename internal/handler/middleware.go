@@ -51,7 +51,7 @@ func (h *Handler) RequireAccess(next http.Handler) http.Handler {
 			return
 		}
 
-		err = h.problemService.AccessRight(userid, postId)
+		err = h.problemService.AccessRight(r.Context(), userid, postId)
 		if err != nil {
 			newErrorResponse(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 			return

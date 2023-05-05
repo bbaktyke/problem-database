@@ -50,6 +50,15 @@ func (pu *ProblemUpdate) Validate() error {
 	return nil
 }
 
+type URLParams struct {
+	ID       int
+	Topic    string
+	Level    string
+	PageNum  int
+	PageSize int
+	Title    string
+}
+
 func (pwt *ProblemWithTopics) Validate() error {
 	p := pwt.Problem
 	if strings.TrimSpace(p.Title) == "" {

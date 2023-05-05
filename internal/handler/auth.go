@@ -2,23 +2,23 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
-	"git.01.alem.school/bbaktyke/test.project.git/pkg/models"
+	"git.01.alem.school/bbaktyke/test.project.git/internal/models"
 	"github.com/go-playground/validator"
+	"github.com/streadway/amqp"
 )
 
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	var input models.User
-	err := json.NewDecoder(r.Body).Decode(&input)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	validator := validator.New()
-	err = validator.Struct(input)
-	if err != nil {
+	if err := validator.Struct(input); err != nil {
 		newErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -28,9 +28,22 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	err = json.NewEncoder(w).Encode(id)
+	// publish message to RabbitMQ queue
+	email, err := json.Marshal(input.Username)
 	if err != nil {
+		newErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	msg := amqp.Publishing{
+		ContentType: "application/json",
+		Body:        email,
+	}
+	if err := h.ch.Publish("", h.qName, false, false, msg); err != nil {
+		log.Printf("failed to publish message to RabbitMQ queue: %v", err)
+	}
+
+	if err = json.NewEncoder(w).Encode(id); err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -50,8 +63,7 @@ func (h *Handler) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validator := validator.New()
-	err = validator.Struct(input)
-	if err != nil {
+	if err = validator.Struct(input); err != nil {
 		newErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -66,8 +78,7 @@ func (h *Handler) Signin(w http.ResponseWriter, r *http.Request) {
 		TokenString: token,
 	}
 
-	err = json.NewEncoder(w).Encode(jwtToken)
-	if err != nil {
+	if err = json.NewEncoder(w).Encode(jwtToken); err != nil {
 		newErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}

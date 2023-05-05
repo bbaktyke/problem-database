@@ -5,11 +5,11 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 RUN GO111MODULE="on" CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app ./cmd
-
 FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/app .
 COPY --from=builder /app/config /app/config
 COPY --from=builder /app/.env .
 EXPOSE 8080
+
 CMD ["./app"]

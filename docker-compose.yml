@@ -5,14 +5,14 @@ networks:
     
 volumes:
   pg_data:
+  redis_data:
 
 services:
   postgres:
     image: postgres:alpine
     restart: always
     volumes:
-      - ./db_setup:/docker-entrypoint-initdb.d/
-      - pg_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d/
     environment:
       - POSTGRES_PASSWORD=qwerty
     networks:
@@ -36,4 +36,35 @@ services:
       - internal
     depends_on:
       - postgres
-   
+      - redis
+      - rabbitmq
+      - mail-sender
+
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - internal
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - internal
+
+  mail-sender:
+    image: bbaktyke/beka:latest
+    restart: always
+    ports:
+      - "8081:8081"
+    networks:
+      - internal
+    depends_on:
+      - rabbitmq

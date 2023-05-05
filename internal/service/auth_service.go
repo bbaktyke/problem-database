@@ -6,10 +6,16 @@ import (
 	"fmt"
 	"time"
 
-	"git.01.alem.school/bbaktyke/test.project.git/pkg/models"
-	"git.01.alem.school/bbaktyke/test.project.git/pkg/repository"
+	"git.01.alem.school/bbaktyke/test.project.git/internal/models"
+	"git.01.alem.school/bbaktyke/test.project.git/internal/repository"
 	"github.com/dgrijalva/jwt-go"
 )
+
+type AuthorizationService interface {
+	CreateUser(user models.User) (int, error)
+	GenerateToken(username, password string) (string, error)
+	ParseToken(tokenString string) (int, error)
+}
 
 const (
 	salt       = "qwewqydgasgay213fdds"
